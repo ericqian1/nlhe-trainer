@@ -9,13 +9,11 @@ import { $, h, fill, cardEl } from './dom.js';
 const SUITS = ['s', 'h', 'd', 'c'];
 
 const eq = {
-  heroKey: null,
-  hero: null, // ['As', '6h']
-  board: [],
+  hero: [], // up to 2 cards, e.g. ['As', '6h']
+  board: [], // 0-5 cards
   mode: 'range', // 'range' | 'hand'
   range: new Set(),
-  vKey: null,
-  vHand: null,
+  vHand: [], // villain's exact hand, up to 2 cards
   preset: '',
   presetUse: 'all',
   running: null, // { sig } while a computation is pending
@@ -23,27 +21,26 @@ const eq = {
   error: null,
 };
 
-
 // ---- derived state -------------------------------------------------------------
 
-const same = (a, b) => a && b && a[0] === b[0] && a[1] === b[1];
-
+// Cards unavailable to `who` because another input already uses them.
 function deadFor(who) {
-  const dead = new Set(eq.board);
-  if (who !== 'hero' && eq.hero) eq.hero.forEach((c) => dead.add(c));
-  if (who !== 'villain' && eq.mode === 'hand' && eq.vHand) eq.vHand.forEach((c) => dead.add(c));
+  const dead = new Set();
+  if (who !== 'board') eq.board.forEach((c) => dead.add(c));
+  if (who !== 'hero') eq.hero.forEach((c) => dead.add(c));
+  if (who !== 'villain' && eq.mode === 'hand') eq.vHand.forEach((c) => dead.add(c));
   return dead;
 }
 
 function villainCombos() {
   const dead = deadFor('villain');
   const live = (combo) => !dead.has(combo[0]) && !dead.has(combo[1]);
-  if (eq.mode === 'hand') return eq.vHand && live(eq.vHand) ? [eq.vHand] : [];
+  if (eq.mode === 'hand') return eq.vHand.length === 2 && live(eq.vHand) ? [eq.vHand] : [];
   return [...eq.range].flatMap((k) => combosOf(k)).filter(live);
 }
 
 function currentJob() {
-  if (!eq.hero || eq.board.length < 3) return null;
+  if (eq.hero.length < 2 || eq.board.length < 3) return null;
   const villain = villainCombos();
   if (!villain.length) return null;
   return { hero: eq.hero, board: eq.board, villain };
@@ -53,9 +50,9 @@ const signature = (job) => (job ? JSON.stringify(job) : '');
 
 function missing() {
   const out = [];
-  if (!eq.hero) out.push(eq.heroKey ? 'pick the suits for your hand' : 'pick your hand');
+  if (eq.hero.length < 2) out.push(`pick ${2 - eq.hero.length} more card${eq.hero.length ? '' : 's'} for your hand`);
   if (eq.board.length < 3) out.push(`pick ${3 - eq.board.length} more board card${eq.board.length === 2 ? '' : 's'} (flop)`);
-  if (eq.mode === 'hand' && !eq.vHand) out.push(eq.vKey ? "pick the suits for villain's hand" : "pick villain's hand");
+  if (eq.mode === 'hand' && eq.vHand.length < 2) out.push(`pick ${2 - eq.vHand.length} more card${eq.vHand.length ? '' : 's'} for villain`);
   if (eq.mode === 'range' && !villainCombos().length) out.push(eq.range.size ? 'villain range is fully blocked by your cards' : 'paint a villain range');
   return out;
 }
@@ -103,74 +100,51 @@ function matrix(cellClass, attrs = {}) {
   return h('div', { class: `grid pick ${attrs.class || ''}` }, cells);
 }
 
-function comboPicker(key, selected, dead, onPick) {
-  if (!key) return null;
-  return h('div', { class: 'combo-row' },
-    combosOf(key).map((combo) => {
-      const blocked = dead.has(combo[0]) || dead.has(combo[1]);
-      return h('button', {
-        class: `combo ${same(combo, selected) ? 'sel' : ''}`,
-        disabled: blocked,
-        title: blocked ? 'Blocked by a card already in use' : null,
-        onclick: () => onPick(combo),
-      }, combo.map((c) => cardEl(c, 'sm')));
-    }));
-}
-
-function pickHint(key) {
-  if (!key) return '';
-  if (key.length === 2) return 'Pick the two suits:';
-  return key[2] === 's' ? 'Pick the suit:' : 'Pick the suits:';
-}
-
-function renderHero() {
-  const grid = matrix((k) => (k === eq.heroKey ? 'sel' : ''));
-  grid.addEventListener('click', (e) => {
-    const cell = e.target.closest('.cell');
-    if (!cell) return;
-    eq.heroKey = cell.dataset.key;
-    const live = combosOf(eq.heroKey).filter((c) => !deadFor('hero').has(c[0]) && !deadFor('hero').has(c[1]));
-    eq.hero = live.length === 1 ? live[0] : null;
-    changed();
-  });
-  fill($('#eq-hero'),
-    h('div', { class: 'eq-head' }, h('h2', null, 'Your hand'),
-      eq.hero ? h('span', { class: 'hero-cards' }, eq.hero.map((c) => cardEl(c, 'lg'))) : h('span', { class: 'muted' }, 'pick a hand')),
-    grid,
-    eq.heroKey ? h('p', { class: 'muted small' }, `${eq.heroKey} — ${pickHint(eq.heroKey)}`) : null,
-    comboPicker(eq.heroKey, eq.hero, deadFor('hero'), (combo) => {
-      eq.hero = combo;
-      changed();
-    }));
-}
-
-function renderBoard() {
-  const dead = deadFor('board');
+// Shared 52-card picker. Clicking a picked card removes it; clicking a new card
+// adds it, or replaces the last one when all slots are full.
+function cardPicker(cards, slotLabels, who) {
+  const dead = deadFor(who);
+  const max = slotLabels.length;
   const rows = SUITS.map((s) => h('div', { class: 'deck-row' },
     [...RANKS].map((r) => {
       const card = r + s;
-      const idx = eq.board.indexOf(card);
+      const idx = cards.indexOf(card);
       return h('button', {
         'data-card': card,
         class: `dcard ${isRed(card) ? 'red' : ''} ${idx >= 0 ? 'sel' : ''}`,
-        disabled: dead.has(card) && idx < 0,
+        disabled: dead.has(card),
         onclick: () => {
-          if (idx >= 0) eq.board.splice(idx, 1);
-          else if (eq.board.length < 5) eq.board.push(card);
+          if (idx >= 0) cards.splice(idx, 1);
+          else if (cards.length < max) cards.push(card);
+          else cards[max - 1] = card;
           changed();
         },
       }, r, h('span', { class: 'suit' }, suitSymbol(card)));
     })));
-  const slots = ['Flop', 'Flop', 'Flop', 'Turn', 'River'].map((label, i) =>
-    h('div', { class: 'slot' }, eq.board[i] ? cardEl(eq.board[i], 'lg') : h('span', { class: 'pcard empty lg' }, '?'), h('small', null, label)));
+  const slots = slotLabels.map((label, i) =>
+    h('div', { class: 'slot' }, cards[i] ? cardEl(cards[i], 'lg') : h('span', { class: 'pcard empty lg' }, '?'), label ? h('small', null, label) : null));
+  return [h('div', { class: 'slots' }, slots), h('div', { class: 'deck' }, rows)];
+}
+
+const clearButton = (onclick) => h('button', { onclick }, 'Clear');
+
+function renderHero() {
+  const [slots, deck] = cardPicker(eq.hero, ['', ''], 'hero');
+  fill($('#eq-hero'),
+    h('div', { class: 'eq-head' }, h('h2', null, 'Your hand'), clearButton(() => { eq.hero = []; changed(); })),
+    slots, deck);
+}
+
+function renderBoard() {
+  const [slots, deck] = cardPicker(eq.board, ['Flop', 'Flop', 'Flop', 'Turn', 'River'], 'board');
   fill($('#eq-board'),
     h('div', { class: 'eq-head' }, h('h2', null, 'Board'),
       h('div', { class: 'row-tight' },
         h('button', { onclick: randomFlop }, 'Random flop'),
-        h('button', { onclick: () => { eq.board = []; changed(); } }, 'Clear'))),
-    h('div', { class: 'slots' }, slots),
-    h('p', { class: 'muted small' }, 'Click cards in order: 3 for the flop, then turn and river. Click a picked card to remove it.'),
-    h('div', { class: 'deck' }, rows));
+        clearButton(() => { eq.board = []; changed(); }))),
+    slots,
+    h('p', { class: 'muted small' }, 'Pick 3 cards for the flop, then the turn and river. Click a picked card to remove it.'),
+    deck);
 }
 
 function randomFlop() {
@@ -284,26 +258,10 @@ function renderVillain() {
       h('p', { class: 'small', id: 'eq-range-stats' }, rangeStats()),
     ];
   } else {
-    const grid = matrix((k) => (k === eq.vKey ? 'sel' : ''));
-    grid.addEventListener('click', (e) => {
-      const cell = e.target.closest('.cell');
-      if (!cell) return;
-      eq.vKey = cell.dataset.key;
-      const dead = deadFor('villain');
-      const live = combosOf(eq.vKey).filter((c) => !dead.has(c[0]) && !dead.has(c[1]));
-      eq.vHand = live.length === 1 ? live[0] : null;
-      changed();
-    });
-    body = [
-      grid,
-      eq.vKey ? h('p', { class: 'muted small' }, `${eq.vKey} — ${pickHint(eq.vKey)}`) : null,
-      comboPicker(eq.vKey, eq.vHand, deadFor('villain'), (combo) => { eq.vHand = combo; changed(); }),
-    ];
+    const [slots, deck] = cardPicker(eq.vHand, ['', ''], 'villain');
+    body = [h('div', { class: 'eq-head' }, slots, clearButton(() => { eq.vHand = []; changed(); })), deck];
   }
-  fill($('#eq-villain'),
-    h('div', { class: 'eq-head' }, h('h2', null, 'Villain'),
-      eq.mode === 'hand' && eq.vHand ? h('span', { class: 'hero-cards' }, eq.vHand.map((c) => cardEl(c, 'lg'))) : null),
-    modeTabs, body);
+  fill($('#eq-villain'), h('h2', null, 'Villain'), modeTabs, body);
 }
 
 // ---- results & EV -----------------------------------------------------------------

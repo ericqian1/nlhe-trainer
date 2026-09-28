@@ -22,9 +22,9 @@ Keyboard: `F` fold, `C` call/check, `R` jump to the raise box (Enter submits), `
 
 The **Equity** tab computes your exact postflop equity (every remaining turn/river card is enumerated) against a known hand or a range:
 
-1. **Your hand** — click a cell in the 13×13 matrix, then pick the suits.
+1. **Your hand** — click your two cards in the 52-card picker.
 2. **Board** — click 3, 4 or 5 cards (flop, turn, river).
-3. **Villain** — either *Exact hand* (matrix + suits) or *Range*: drag across the matrix to paint hands, or load any chart from `data/ranges.csv` (raise + call, raise only, or call only). Combos blocked by known cards are removed.
+3. **Villain** — either *Exact hand* (two cards from the same card picker) or *Range*: drag across the matrix to paint hands, or load any chart from `data/ranges.csv` (raise + call, raise only, or call only). Combos blocked by known cards are removed.
 4. **Pot & bet** — pot before the betting (default 100bb), your bet already in (if you're facing a raise), and villain's bet/raise-to. The **bb / $** toggle switches inputs and results between big blinds and dollars (1bb = $2).
 
 Press **Compute equity**. The result shows win/tie/lose, your equity against each hand in the range (heat map), and the EV-0 threshold: the largest bet (or raise-to) you can call on pure equity. With equity `E`, pot `P`, your bet `h` and villain's bet/raise-to `R`:

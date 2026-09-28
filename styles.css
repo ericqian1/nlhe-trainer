@@ -343,17 +343,15 @@ details summary { cursor: pointer; color: var(--muted); font-size: .88rem; margi
 @media (max-width: 860px) { .eq-grid { grid-template-columns: minmax(0, 1fr); } }
 .eq-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem; }
 .eq-head h2 { margin: 0; }
+.eq-head .slots { margin: 0; }
+#eq-villain .tabs { margin-bottom: .6rem; }
 .row-tight { display: flex; gap: .4rem; flex-wrap: wrap; }
 
 .grid.pick .cell { cursor: pointer; background: var(--fold); color: var(--muted); user-select: none; }
 .grid.pick .cell:hover { outline: 1px solid var(--muted); outline-offset: -1px; }
-.grid.pick .cell.sel { background: var(--p-hero); color: #221a00; }
 .grid.pick .cell.in { background: var(--p-pro); color: #fff; }
 .grid.paint { touch-action: none; }
 
-.combo-row { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
-.combo { display: inline-flex; gap: 2px; padding: .3rem .4rem; }
-.combo.sel { border-color: var(--p-hero); box-shadow: 0 0 0 2px var(--p-hero); }
 
 .slots { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .3rem; }
 .slot { display: flex; flex-direction: column; align-items: center; gap: .15rem; }
