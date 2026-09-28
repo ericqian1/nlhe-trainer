@@ -50,17 +50,23 @@
         <div class="eq-col">
           <div class="card" id="eq-villain"></div>
           <div class="card">
-            <h2>Pot &amp; bet</h2>
+            <div class="eq-head">
+              <h2>Pot &amp; bet</h2>
+              <div class="tabs unit-toggle" id="eq-unit" role="group" aria-label="Units">
+                <button data-unit="bb">bb</button>
+                <button data-unit="$">$</button>
+              </div>
+            </div>
             <div class="field-row">
               <label>Pot before the bet
-                <span class="unit-input"><input id="eq-pot" type="number" min="0" step="any" value="100"> bb</span></label>
+                <span class="unit-input"><span class="unit-pre"></span><input id="eq-pot" type="number" min="0" step="any" value="100"><span class="unit-post">bb</span></span></label>
               <label>Villain bets / raises to
-                <span class="unit-input"><input id="eq-vbet" type="number" min="0" step="any" placeholder="optional"> bb</span></label>
+                <span class="unit-input"><span class="unit-pre"></span><input id="eq-vbet" type="number" min="0" step="any" placeholder="optional"><span class="unit-post">bb</span></span></label>
               <label>Your bet already in
-                <span class="unit-input"><input id="eq-hbet" type="number" min="0" step="any" value="0"> bb</span></label>
+                <span class="unit-input"><span class="unit-pre"></span><input id="eq-hbet" type="number" min="0" step="any" value="0"><span class="unit-post">bb</span></span></label>
             </div>
             <p class="muted small">Pot = what was in the middle before this round of betting. Facing a raise? Put your
-              own bet in <em>Your bet already in</em> and the raise total in <em>Villain raises to</em>. 1bb = $2.</p>
+              own bet in <em>Your bet already in</em> and the raise total in <em>Villain raises to</em>. Toggle bb / $ to enter and read amounts in either (1bb = $2).</p>
           </div>
           <div class="card" id="eq-result"></div>
         </div>

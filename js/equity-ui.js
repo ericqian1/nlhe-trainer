@@ -308,11 +308,41 @@ function renderVillain() {
 
 // ---- results & EV -----------------------------------------------------------------
 
+// Amounts are kept in bb internally; the unit toggle only changes what the
+// inputs mean and how results are shown (1bb = $2).
+const UNIT_KEY = 'nlhe-trainer:equity-unit';
+const USD_PER_BB = 2;
+const AMOUNT_INPUTS = ['#eq-pot', '#eq-vbet', '#eq-hbet'];
+let unit = 'bb';
+
 const num = (id) => {
   const v = parseFloat($(id).value);
-  return Number.isFinite(v) && v >= 0 ? v : null;
+  if (!Number.isFinite(v) || v < 0) return null;
+  return unit === '$' ? v / USD_PER_BB : v;
 };
-const fmtBB = (bb) => `${Math.round(bb * 10) / 10}bb ($${Math.round(bb * 2)})`;
+const round1 = (x) => Math.round(x * 10) / 10;
+const fmtBB = (bb) => (unit === '$' ? `$${round1(bb * USD_PER_BB)}` : `${round1(bb)}bb`);
+
+function setUnit(next) {
+  if (next === unit) return;
+  const factor = next === '$' ? USD_PER_BB : 1 / USD_PER_BB;
+  for (const id of AMOUNT_INPUTS) {
+    const v = parseFloat($(id).value);
+    if (Number.isFinite(v)) $(id).value = round1(v * factor);
+  }
+  unit = next;
+  try {
+    localStorage.setItem(UNIT_KEY, unit);
+  } catch (e) { /* storage unavailable */ }
+  renderUnit();
+  renderResult();
+}
+
+function renderUnit() {
+  for (const b of document.querySelectorAll('#eq-unit button')) b.classList.toggle('active', b.dataset.unit === unit);
+  for (const el of document.querySelectorAll('.unit-pre')) el.textContent = unit === '$' ? '$' : '';
+  for (const el of document.querySelectorAll('.unit-post')) el.textContent = unit === '$' ? '' : 'bb';
+}
 const pct = (x) => `${(x * 100).toFixed(1)}%`;
 
 // Pot P before the betting, hero already put in hb, villain bets/raises to R.
@@ -360,10 +390,10 @@ function evSection(E) {
     h('tbody', null, sizes.map(({ label, R: r }) => {
       const f = evFacing(E, P, hb, r);
       return h('tr', { class: f.ev >= 0 ? 'good' : 'bad' },
-        h('td', null, `${label} (${Math.round(r * 10) / 10}bb)`),
-        h('td', null, `${Math.round(f.toCall * 10) / 10}bb`),
+        h('td', null, `${label} (${fmtBB(r)})`),
+        h('td', null, fmtBB(f.toCall)),
         h('td', null, pct(f.need)),
-        h('td', null, `${f.ev >= 0 ? '+' : '−'}${Math.abs(Math.round(f.ev * 10) / 10)}bb`),
+        h('td', null, `${f.ev >= 0 ? '+' : '−'}${fmtBB(Math.abs(f.ev))}`),
         h('td', null, f.ev >= 0 ? 'call' : 'fold'));
     })))));
   parts.push(h('p', { class: 'muted small' },
@@ -407,7 +437,15 @@ function renderResult() {
 // ---- entry points ----------------------------------------------------------------
 
 export function initEquity() {
-  for (const id of ['#eq-pot', '#eq-hbet', '#eq-vbet']) $(id).addEventListener('input', renderResult);
+  for (const id of AMOUNT_INPUTS) $(id).addEventListener('input', renderResult);
+  for (const b of document.querySelectorAll('#eq-unit button')) b.addEventListener('click', () => setUnit(b.dataset.unit));
+  let saved = null;
+  try {
+    saved = localStorage.getItem(UNIT_KEY);
+  } catch (e) { /* storage unavailable */ }
+  // The inputs start out in bb; converting through setUnit keeps them consistent.
+  if (saved === '$') setUnit('$');
+  else renderUnit();
 }
 
 export function renderEquity() {
