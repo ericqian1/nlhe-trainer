@@ -17,6 +17,7 @@
     <div class="stats" id="stats"></div>
     <nav class="tabs">
       <button data-screen="train">Train</button>
+      <button data-screen="equity">Equity</button>
       <button data-screen="ranges">Ranges</button>
       <button data-screen="setup">Table setup</button>
     </nav>
@@ -36,6 +37,32 @@
         <div class="card log-card">
           <h3>Action</h3>
           <ol id="log" class="log"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-equity" class="screen" hidden>
+      <div class="eq-grid">
+        <div class="eq-col">
+          <div class="card" id="eq-hero"></div>
+          <div class="card" id="eq-board"></div>
+        </div>
+        <div class="eq-col">
+          <div class="card" id="eq-villain"></div>
+          <div class="card">
+            <h2>Pot &amp; bet</h2>
+            <div class="field-row">
+              <label>Pot before the bet
+                <span class="unit-input"><input id="eq-pot" type="number" min="0" step="any" value="100"> bb</span></label>
+              <label>Villain bets / raises to
+                <span class="unit-input"><input id="eq-vbet" type="number" min="0" step="any" placeholder="optional"> bb</span></label>
+              <label>Your bet already in
+                <span class="unit-input"><input id="eq-hbet" type="number" min="0" step="any" value="0"> bb</span></label>
+            </div>
+            <p class="muted small">Pot = what was in the middle before this round of betting. Facing a raise? Put your
+              own bet in <em>Your bet already in</em> and the raise total in <em>Villain raises to</em>. 1bb = $2.</p>
+          </div>
+          <div class="card" id="eq-result"></div>
         </div>
       </div>
     </section>

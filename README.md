@@ -1,6 +1,6 @@
 # Preflop Trainer — $1/$2 NLHE
 
-A static, no-build web app for drilling preflop decisions and raise sizing in a 9-handed $1/$2 live cash game ($200 stacks).
+A static, no-build web app for drilling preflop decisions and raise sizing in a 9-handed $1/$2 live cash game ($200 stacks), plus a postflop equity and EV-0 calculator.
 
 - You sit in a random seat each hand; the other 8 seats are villains with fixed profiles you choose on **Table setup**: `casual` (limps/overlimps, calls wide), `omc` (only plays monsters), `pro` (GTO-ish) and `tilted` (too wide and aggressive).
 - Villains act from the range charts in [`data/ranges.csv`](data/ranges.csv). The **Ranges** tab shows every chart as a 13×13 grid.
@@ -17,6 +17,23 @@ A static, no-build web app for drilling preflop decisions and raise sizing in a 
 "Exact" means within $1 of the formula; "close" means within 10%.
 
 Keyboard: `F` fold, `C` call/check, `R` jump to the raise box (Enter submits), `Enter` next hand.
+
+## Equity checker
+
+The **Equity** tab computes your exact postflop equity (every remaining turn/river card is enumerated) against a known hand or a range:
+
+1. **Your hand** — click a cell in the 13×13 matrix, then pick the suits.
+2. **Board** — click 3, 4 or 5 cards (flop, turn, river).
+3. **Villain** — either *Exact hand* (matrix + suits) or *Range*: drag across the matrix to paint hands, or load any chart from `data/ranges.csv` (raise + call, raise only, or call only). Combos blocked by known cards are removed.
+4. **Pot & bet** — pot before the betting (default 100bb), your bet already in (if you're facing a raise), and villain's bet/raise-to.
+
+Press **Compute equity**. The result shows win/tie/lose, your equity against each hand in the range (heat map), and the EV-0 threshold: the largest bet (or raise-to) you can call on pure equity. With equity `E`, pot `P`, your bet `h` and villain's bet/raise-to `R`:
+
+- calling costs `R − h` to win a final pot of `P + 2R`, so the required equity is `(R − h) / (P + 2R)`
+- EV of calling = `E·(P + 2R) − (R − h)`
+- break-even size `R* = (E·P + h) / (1 − 2E)`; at `E ≥ 50%` every call is +EV
+
+This treats the call as the last money in — no implied odds or future betting.
 
 ## Editing ranges
 

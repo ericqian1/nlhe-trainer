@@ -336,3 +336,69 @@ details summary { cursor: pointer; color: var(--muted); font-size: .88rem; margi
 .stepper { display: flex; align-items: center; gap: .5rem; flex: none; }
 .stepper span { min-width: 1.3rem; text-align: center; font-weight: 700; font-size: 1.1rem; }
 .stepper button { width: 2.1rem; height: 2.1rem; padding: 0; }
+
+/* ---- equity screen ---- */
+
+.eq-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 1rem; align-items: start; }
+@media (max-width: 860px) { .eq-grid { grid-template-columns: minmax(0, 1fr); } }
+.eq-head { display: flex; justify-content: space-between; align-items: center; gap: .5rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.eq-head h2 { margin: 0; }
+.row-tight { display: flex; gap: .4rem; flex-wrap: wrap; }
+
+.grid.pick .cell { cursor: pointer; background: var(--fold); color: var(--muted); user-select: none; }
+.grid.pick .cell:hover { outline: 1px solid var(--muted); outline-offset: -1px; }
+.grid.pick .cell.sel { background: var(--p-hero); color: #221a00; }
+.grid.pick .cell.in { background: var(--p-pro); color: #fff; }
+.grid.paint { touch-action: none; }
+
+.combo-row { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+.combo { display: inline-flex; gap: 2px; padding: .3rem .4rem; }
+.combo.sel { border-color: var(--p-hero); box-shadow: 0 0 0 2px var(--p-hero); }
+
+.slots { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .3rem; }
+.slot { display: flex; flex-direction: column; align-items: center; gap: .15rem; }
+.slot small { color: var(--muted); font-size: .7rem; }
+.pcard.empty { background: transparent; color: var(--muted); border-style: dashed; border-color: var(--border); min-width: 2.2rem; justify-content: center; }
+
+.deck { display: grid; gap: 3px; }
+.deck-row { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); gap: 3px; }
+.dcard {
+  padding: .3rem 0; font-weight: 700; font-size: .85rem;
+  background: #fff; color: #111; border-color: #ccc;
+  display: flex; justify-content: center; gap: 1px;
+}
+.dcard.red { color: #c62828; }
+.dcard.sel { background: var(--p-hero); border-color: var(--p-hero); }
+.dcard:disabled { opacity: .25; }
+
+.preset-row { display: flex; gap: .4rem; flex-wrap: wrap; margin: .6rem 0 .2rem; }
+.preset-row select { font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: .4rem; max-width: 100%; }
+.preset-row select:first-child { flex: 1 1 14rem; min-width: 0; }
+
+.field-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .6rem; }
+.field-row label { display: flex; flex-direction: column; gap: .25rem; font-size: .85rem; font-weight: 600; }
+.unit-input { display: flex; align-items: center; gap: .35rem; font-weight: 400; color: var(--muted); }
+.unit-input input {
+  font: inherit; color: var(--text); background: var(--panel);
+  border: 1px solid var(--border); border-radius: 8px; padding: .4rem .5rem; width: 100%; min-width: 0;
+}
+
+.eq-big { margin: .8rem 0 .4rem; }
+.big-num { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+.wtl { display: flex; height: .6rem; border-radius: 999px; overflow: hidden; background: var(--fold); }
+.wtl .w { background: var(--good); }
+.wtl .t { background: var(--warn); }
+.wtl .l { background: var(--bad); }
+.wtl-legend { color: var(--muted); margin: .25rem 0 .6rem; }
+
+.ev0, .facing { border-radius: 10px; padding: .6rem .75rem; margin: .5rem 0; background: color-mix(in srgb, var(--p-pro) 12%, transparent); }
+.ev0 .big-num { font-size: 1.5rem; }
+.ev0.good, .facing.good { background: var(--good-bg); }
+.facing.bad { background: var(--bad-bg); }
+
+.table-wrap { overflow-x: auto; }
+.ev-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin: .4rem 0; }
+.ev-table th, .ev-table td { text-align: left; padding: .3rem .4rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.ev-table th { color: var(--muted); font-weight: 600; }
+.ev-table tr.good td:last-child { color: var(--good); font-weight: 700; }
+.ev-table tr.bad td:last-child { color: var(--bad); font-weight: 700; }

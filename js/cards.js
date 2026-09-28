@@ -106,3 +106,16 @@ export function parseRange(str) {
   }
   return set;
 }
+
+// All specific two-card combos for a hand class, e.g. 'AKs' -> [['As','Ks'], ...].
+export function combosOf(key) {
+  const [r1, r2] = key;
+  const out = [];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      if (key.length === 2 ? j <= i : key[2] === 's' ? j !== i : j === i) continue;
+      out.push([r1 + SUITS[i], r2 + SUITS[j]]);
+    }
+  }
+  return out;
+}

@@ -1,7 +1,9 @@
 import { PROFILES, PROFILE_ORDER, loadRanges, allCharts } from './profiles.js';
 import { createHand, advance, applyAction } from './engine.js';
 import { gradeDecision } from './grade.js';
-import { RANKS, gridKey, suitSymbol, isRed, comboCount } from './cards.js';
+import { gridKey, comboCount } from './cards.js';
+import { $, h, fill, cardEl } from './dom.js';
+import { initEquity, renderEquity } from './equity-ui.js';
 
 const STORE_KEY = 'nlhe-trainer:table:v1';
 const DEFAULT_TABLE = ['casual', 'omc', 'casual', 'pro', 'tilted', 'casual', 'omc', 'pro', 'casual'];
@@ -19,32 +21,8 @@ const app = {
   rangeProfile: 'pro',
 };
 
-// ---- small DOM helpers ------------------------------------------------------
-
-const $ = (sel) => document.querySelector(sel);
-
-function h(tag, attrs, ...children) {
-  const e = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs || {})) {
-    if (v == null || v === false) continue;
-    if (k === 'class') e.className = v;
-    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
-    else e.setAttribute(k, v === true ? '' : v);
-  }
-  for (const c of children.flat(Infinity)) {
-    if (c == null || c === false) continue;
-    e.append(c.nodeType ? c : String(c));
-  }
-  return e;
-}
-
-const fill = (el, ...kids) => el.replaceChildren(...kids.flat().filter((k) => k != null && k !== false));
 const money = (n) => `$${n}`;
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
-
-function cardEl(card, cls = '') {
-  return h('span', { class: `pcard ${isRed(card) ? 'red' : ''} ${cls}` }, card[0], h('span', { class: 'suit' }, suitSymbol(card)));
-}
 
 function profileBadge(profile) {
   if (!profile) return h('span', { class: 'badge hero' }, 'You');
@@ -86,7 +64,7 @@ function actionName(action, ctx) {
 function showScreen(name) {
   app.screen = name;
   history.replaceState(null, '', `#${name}`);
-  for (const s of ['train', 'ranges', 'setup']) $(`#screen-${s}`).hidden = s !== name;
+  for (const s of ['train', 'equity', 'ranges', 'setup']) $(`#screen-${s}`).hidden = s !== name;
   for (const b of document.querySelectorAll('nav.tabs button')) b.classList.toggle('active', b.dataset.screen === name);
   if (name === 'train') {
     if (!app.hand || (app.tableDirty && app.hand.over)) nextHand();
@@ -94,6 +72,7 @@ function showScreen(name) {
   }
   if (name === 'ranges') renderRanges();
   if (name === 'setup') renderSetup();
+  if (name === 'equity') renderEquity();
 }
 
 function renderStats() {
@@ -466,6 +445,7 @@ async function boot() {
     saveTable();
     renderSetup();
   });
+  initEquity();
   $('#start').addEventListener('click', () => {
     saveTable();
     showScreen('train');
@@ -486,7 +466,7 @@ async function boot() {
   app.table = stored || DEFAULT_TABLE.slice();
   renderStats();
   const fromHash = location.hash.slice(1);
-  showScreen(['train', 'ranges', 'setup'].includes(fromHash) ? fromHash : stored ? 'train' : 'setup');
+  showScreen(['train', 'equity', 'ranges', 'setup'].includes(fromHash) ? fromHash : stored ? 'train' : 'setup');
 }
 
 boot();

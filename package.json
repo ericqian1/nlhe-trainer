@@ -5,6 +5,6 @@
   "description": "Preflop decision and sizing trainer for 9-handed $1/$2 NLHE",
   "scripts": {
     "start": "node scripts/serve.js",
-    "test": "node tests/engine.test.js"
+    "test": "node tests/engine.test.js && node tests/equity.test.js"
   }
 }
