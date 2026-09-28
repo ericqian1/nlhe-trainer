@@ -1,0 +1,44 @@
+profile,spot,raise,call,raise_or_call,raise_or_fold,call_or_fold
+pro,rfi.UTG,77+ A9s+ KTs+ QTs+ JTs AJo+ KQo,,,66-55 A5s-A4s T9s KJo,
+pro,rfi.UTG+1,66+ A8s+ A5s KTs+ QTs+ JTs T9s AJo+ KQo,,,55-44 A7s A4s K9s 98s ATo KJo,
+pro,rfi.UTG+2,55+ A7s+ A5s-A4s K9s+ Q9s+ J9s+ T9s 98s ATo+ KJo+,,,44-33 A6s A3s 87s QJo,
+pro,rfi.LJ,44+ A2s+ K9s+ Q9s+ J9s+ T8s+ 98s 87s ATo+ KJo+ QJo,,,33-22 K8s 76s A9o KTo,
+pro,rfi.HJ,22+ A2s+ K8s+ Q9s+ J9s+ T8s+ 97s+ 87s 76s A9o+ KTo+ QTo+ JTo,,,K7s Q8s 65s A8o,
+pro,rfi.CO,22+ A2s+ K6s+ Q8s+ J8s+ T8s+ 97s+ 86s+ 76s 65s A7o+ A5o KTo+ QTo+ JTo,,,K5s Q7s J7s 75s 54s A6o A4o K9o Q9o J9o T9o,
+pro,rfi.BTN,22+ A2s+ K2s+ Q5s+ J7s+ T7s+ 96s+ 86s+ 75s+ 64s+ 54s A2o+ K8o+ Q9o+ J9o+ T9o 98o,,,Q4s-Q2s J6s T6s 85s 53s 43s K7o-K5o Q8o J8o T8o 87o,
+pro,rfi.SB,22+ A2s+ K5s+ Q7s+ J8s+ T8s+ 97s+ 86s+ 76s 65s A5o+ K9o+ QTo+ JTo,,,K4s-K2s Q6s J7s T7s 75s 54s A4o-A2o K8o Q9o J9o T9o,
+pro,limped.EP,88+ ATs+ KJs+ QJs AQo+,77-22 A9s-A2s KTs QTs JTs T9s 98s,AJo KQo,,
+pro,limped.MP,77+ A9s+ KTs+ QJs AJo+ KQo,55-22 A8s-A2s K9s QTs JTs T9s 98s 87s 76s,66 ATo KJo,,
+pro,limped.LP,55+ A7s+ A5s KTs+ QTs+ JTs T9s ATo+ KJo+,33-22 A4s-A2s K8s-K2s Q9s-Q8s J9s-J8s T8s 97s 87s 86s 76s 65s 54s KTo QTo JTo,44 A6s K9s 98s A9o QJo,,
+pro,limped.SB,99+ AJs+ KQs AQo+,77-22 A9s-A2s KTs-K2s Q5s+ J7s+ T7s+ 96s+ 85s+ 75s+ 64s+ 54s ATo-A2o KJo-K9o QTo+ JTo,88 ATs KJs AJo KQo,,
+pro,limped.BB,99+ AJs+ KQs AQo+,,88-77 ATs KJs QJs AJo KQo A5s,,
+pro,vsOpen.IP_early,QQ+ AKs AKo,TT-66 AJs KQs KJs QJs JTs T9s AQo,JJ AQs,A5s,55-22 ATs KTs 98s AJo KQo
+pro,vsOpen.IP_late,TT+ AQs+ AKo A5s-A4s KQs,88-44 ATs KJs KTs QJs QTs JTs T9s 98s 87s 76s KQo,99 AJs AQo,A3s-A2s K9s 65s,33-22 A9s AJo KJo
+pro,vsOpen.SB_early,QQ+ AKs AKo,TT-99 AJs KQs,JJ AQs,A5s,
+pro,vsOpen.SB_late,TT+ AQs+ KQs AQo+ A5s-A4s,88-66 ATs QJs JTs T9s,99 AJs KJs AJo,A3s-A2s K9s QTs,
+pro,vsOpen.BB_early,QQ+ AKs AKo,TT-44 AJs-A6s A3s-A2s K9s+ Q9s+ J9s+ T8s+ 97s+ 86s+ 76s 65s 54s AQo AJo KQo,JJ AQs,A5s-A4s,33-22 KJo ATo
+pro,vsOpen.BB_late,TT+ AQs+ AKo A5s-A4s,88-22 ATs-A6s A3s-A2s KJs-K7s Q8s+ J8s+ T8s+ 97s+ 86s+ 75s+ 64s+ 54s AJo ATo KTo+ QTo+ JTo,99 AJs KQs AQo,,A9o K9o Q9o J9o T9o 98o 53s
+pro,vs3bet.invested,QQ+ AKs,TT-77 AQs-ATs KQs KJs QJs JTs T9s AQo,JJ AKo,A5s-A4s,66-55 98s KTs AJo KQo
+pro,vs3bet.cold,KK+ AKs,JJ,QQ AKo,,TT AQs
+pro,vs4bet.invested,KK+ AKs,JJ AQs,QQ AKo,,TT
+pro,vs4bet.cold,KK+,,QQ AKs,,
+pro,vsAllin.invested,,QQ+ AKs AKo,,,JJ AQs
+pro,vsAllin.cold,,KK+,,,QQ AKs
+casual,rfi,TT+ AQs+ AKo,99-22 AJs-A2s KQs-K2s Q5s+ J7s+ T7s+ 96s+ 85s+ 74s+ 63s+ 53s+ 43s AQo-A2o K8o+ Q9o+ J9o+ T9o 98o,,,K7o-K5o Q8o J8o T8o 87o 76o Q4s-Q2s 52s 42s 32s
+casual,limped,TT+ AQs+ AKo,99-22 AJs-A2s KQs-K2s Q5s+ J7s+ T7s+ 96s+ 85s+ 74s+ 63s+ 53s+ 43s AQo-A2o K8o+ Q9o+ J9o+ T9o 98o,,,K7o-K5o Q8o J8o T8o 87o 76o Q4s-Q2s 52s 42s 32s
+casual,vsOpen,KK+ AKs,QQ-22 AQs-A2s K8s+ Q9s+ J9s+ T8s+ 97s+ 87s 76s 65s A9o+ KTo+ QJo,,,K7s-K2s Q8s J8s 86s 75s 54s A8o-A2o K9o QTo JTo
+casual,vs3bet,KK+,QQ-77 ATs+ KJs+ QJs AJo+ KQo,,,66-22 A9s-A2s JTs T9s
+casual,vs4bet,KK+,QQ-JJ AKs AKo,,,TT AQs
+casual,vsAllin,,JJ+ AQs+ AKo,,,TT AQo
+omc,rfi,99+ AJs+ KQs AQo+,,,,
+omc,limped,99+ AJs+ KQs AQo+,,,,
+omc,vsOpen,QQ+ AKs AKo,JJ-99 AJs-AQs KQs AQo,,,
+omc,vs3bet,KK+ AKs,QQ AKo,,,
+omc,vs4bet,KK+,QQ AKs,,,
+omc,vsAllin,,QQ+ AKs,,,
+tilted,rfi,22+ A2s+ K2s+ Q4s+ J6s+ T6s+ 95s+ 85s+ 74s+ 64s+ 53s+ 43s A2o+ K7o+ Q8o+ J8o+ T8o+ 98o 87o,,,Q7o-Q5o J7o T7o 97o 63s 52s 42s,K6o-K2o Q3s-Q2s J5s-J2s 76o 65o
+tilted,limped,22+ A2s+ K2s+ Q4s+ J6s+ T6s+ 95s+ 85s+ 74s+ 64s+ 53s+ 43s A2o+ K7o+ Q8o+ J8o+ T8o+ 98o 87o,,,Q7o-Q5o J7o T7o 97o 63s 52s 42s,K6o-K2o Q3s-Q2s J5s-J2s 76o 65o
+tilted,vsOpen,88+ A9s+ A5s-A2s KTs+ QJs AJo+ KQo 76s 65s,66-22 A8s-A6s K9s-K2s Q9s-Q5s J9s-J7s T9s-T7s 96s+ 85s+ 75s 64s 54s A9o-A2o KJo-K9o QJo Q9o J9o+ T9o,77 ATo QTs JTs,,
+tilted,vs3bet,TT+ AQs+ AKo A5s,88-22 ATs-A6s A4s-A2s K9s+ Q9s+ J9s+ T8s+ 98s 87s 76s 65s AJo ATo KJo+ QJo,99 AJs AQo,,
+tilted,vs4bet,JJ+ AQs+ AKo,99-88 AJs ATs KQs,TT AQo,,
+tilted,vsAllin,,88+ ATs+ KQs AJo+,,,77-55 A9s KJs

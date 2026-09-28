@@ -1,0 +1,10 @@
+{
+  "name": "nlhe-trainer",
+  "private": true,
+  "type": "module",
+  "description": "Preflop decision and sizing trainer for 9-handed $1/$2 NLHE",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node tests/engine.test.js"
+  }
+}
