@@ -94,4 +94,23 @@ test('full-range flop enumeration runs in reasonable time', () => {
   assert.ok(r.combos === 1081);
 });
 
+test('preflop: exact vs one hand, simulated vs a range', () => {
+  // Suit-symmetric matchup: equity must be exactly 50%.
+  let r = calcEquity({ hero: ['Ah', 'Kd'], board: [], villain: [['Ac', 'Ks']] });
+  assert.ok(r.exact);
+  assert.strictEqual(r.runouts, 1712304);
+  assert.ok(Math.abs(r.equity - 0.5) < 1e-12);
+  // Well-known reference values: AA vs any two ~85.2%, 72o vs any two ~34.6%.
+  const all = newDeck();
+  const any = [];
+  for (let i = 0; i < 52; i++) for (let j = i + 1; j < 52; j++) any.push([all[i], all[j]]);
+  let seed = 99;
+  const rng = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
+  r = calcEquity({ hero: ['Ah', 'As'], board: [], villain: any }, null, rng);
+  assert.ok(!r.exact && r.margin < 0.002);
+  assert.ok(Math.abs(r.equity - 0.852) < 0.004, `AA vs any: ${r.equity}`);
+  r = calcEquity({ hero: ['7h', '2c'], board: [], villain: any }, null, rng);
+  assert.ok(Math.abs(r.equity - 0.346) < 0.004, `72o vs any: ${r.equity}`);
+});
+
 console.log(`${passed} equity tests passed${process.exitCode ? ', some FAILED' : ''}`);

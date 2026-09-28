@@ -40,7 +40,8 @@ function villainCombos() {
 }
 
 function currentJob() {
-  if (eq.hero.length < 2 || eq.board.length < 3) return null;
+  // Board must be empty (preflop) or at least a full flop.
+  if (eq.hero.length < 2 || (eq.board.length > 0 && eq.board.length < 3)) return null;
   const villain = villainCombos();
   if (!villain.length) return null;
   return { hero: eq.hero, board: eq.board, villain };
@@ -51,7 +52,7 @@ const signature = (job) => (job ? JSON.stringify(job) : '');
 function missing() {
   const out = [];
   if (eq.hero.length < 2) out.push(`pick ${2 - eq.hero.length} more card${eq.hero.length ? '' : 's'} for your hand`);
-  if (eq.board.length < 3) out.push(`pick ${3 - eq.board.length} more board card${eq.board.length === 2 ? '' : 's'} (flop)`);
+  if (eq.board.length > 0 && eq.board.length < 3) out.push(`pick ${3 - eq.board.length} more board card${eq.board.length === 2 ? '' : 's'} for the flop, or clear the board for preflop`);
   if (eq.mode === 'hand' && eq.vHand.length < 2) out.push(`pick ${2 - eq.vHand.length} more card${eq.vHand.length ? '' : 's'} for villain`);
   if (eq.mode === 'range' && !villainCombos().length) out.push(eq.range.size ? 'villain range is fully blocked by your cards' : 'paint a villain range');
   return out;
@@ -143,7 +144,7 @@ function renderBoard() {
         h('button', { onclick: randomFlop }, 'Random flop'),
         clearButton(() => { eq.board = []; changed(); }))),
     slots,
-    h('p', { class: 'muted small' }, 'Pick 3 cards for the flop, then the turn and river. Click a picked card to remove it.'),
+    h('p', { class: 'muted small' }, 'Leave empty for preflop equity, or pick 3 cards for the flop, then the turn and river. Click a picked card to remove it.'),
     deck);
 }
 
@@ -377,11 +378,15 @@ function renderResult() {
   else if (!fresh && !eq.running) kids.push(h('p', { class: 'muted' }, r ? 'Inputs changed — press Compute to update.' : `${job.villain.length} villain combo${job.villain.length === 1 ? '' : 's'} × every runout.`));
 
   if (fresh) {
-    const made = handName(eq.hero.concat(eq.board));
+    const street = ['Preflop', '', '', 'Flop', 'Turn', 'River'][eq.board.length];
+    const made = eq.board.length ? `You have ${handName(eq.hero.concat(eq.board)).toLowerCase()}` : street;
+    const sample = r.exact
+      ? `${r.runouts.toLocaleString()} showdowns (exact)`
+      : `${r.runouts.toLocaleString()} simulated boards · ±${(r.margin * 100).toFixed(1)}%`;
     kids.push(
       h('div', { class: 'eq-big' },
         h('div', { class: 'big-num' }, pct(r.equity)),
-        h('div', { class: 'muted' }, `You have ${made.toLowerCase()} · vs ${r.combos} combo${r.combos === 1 ? '' : 's'} · ${r.runouts.toLocaleString()} showdowns`)),
+        h('div', { class: 'muted' }, `${made} · vs ${r.combos} combo${r.combos === 1 ? '' : 's'} · ${sample}`)),
       h('div', { class: 'wtl' },
         h('span', { class: 'w', style: `flex:${r.win}` }), h('span', { class: 't', style: `flex:${r.tie}` }), h('span', { class: 'l', style: `flex:${1 - r.win - r.tie}` })),
       h('div', { class: 'wtl-legend small' }, `Win ${pct(r.win)} · Tie ${pct(r.tie)} · Lose ${pct(1 - r.win - r.tie)}`),

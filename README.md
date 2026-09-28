@@ -16,14 +16,14 @@ A static, no-build web app for drilling preflop decisions and raise sizing in a 
 
 "Exact" means within $1 of the formula; "close" means within 10%.
 
-Keyboard: `F` fold, `C` call/check, `R` jump to the raise box (Enter submits), `Enter` next hand.
+On the **Pre-Flop** tab, keyboard: `F` fold, `C` call/check, `R` jump to the raise box (Enter submits), `Enter` next hand.
 
 ## Equity checker
 
-The **Equity** tab computes your exact postflop equity (every remaining turn/river card is enumerated) against a known hand or a range:
+The **Equity** tab computes your equity against a known hand or a range, preflop or on any street. Postflop, every remaining turn/river card is enumerated exactly. Preflop (empty board) is exact against a single hand (all 1,712,304 boards) and simulated against a range (~600k random boards, shown with its ±95% margin):
 
 1. **Your hand** — click your two cards in the 52-card picker.
-2. **Board** — click 3, 4 or 5 cards (flop, turn, river).
+2. **Board** — leave empty for preflop, or click 3, 4 or 5 cards (flop, turn, river).
 3. **Villain** — either *Exact hand* (two cards from the same card picker) or *Range*: drag across the matrix to paint hands, or load any chart from `data/ranges.csv` (raise + call, raise only, or call only). Combos blocked by known cards are removed.
 4. **Pot & bet** — pot before the betting (default 100bb), your bet already in (if you're facing a raise), and villain's bet/raise-to. The **bb / $** toggle switches inputs and results between big blinds and dollars (1bb = $2).
 

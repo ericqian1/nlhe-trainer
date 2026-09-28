@@ -93,9 +93,10 @@ export function handName(cardStrs) {
   return HAND_NAMES[evaluate(ids, ids.length) >> 20];
 }
 
-// Exact equity of hero vs. each villain combo, enumerating every runout.
-// job = { hero: ['As','Kd'], board: [3-5 cards], villain: [['Qh','Qd'], ...] }
-export function calcEquity(job, onProgress) {
+// Equity of hero vs. each villain combo.
+// job = { hero: ['As','Kd'], board: [0 or 3-5 cards], villain: [['Qh','Qd'], ...] }
+// Postflop and preflop-vs-one-hand are exact; preflop vs. a range is simulated.
+export function calcEquity(job, onProgress, rng = Math.random) {
   const heroIds = job.hero.map(cardId);
   const boardIds = job.board.map(cardId);
   const dead = new Uint8Array(52);
@@ -111,6 +112,7 @@ export function calcEquity(job, onProgress) {
   const need = 5 - boardIds.length;
   const deck = [];
   for (let c = 0; c < 52; c++) if (!dead[c]) deck.push(c);
+  if (need === 5) return preflopEquity(heroIds, combos, deck, onProgress, rng);
 
   // Hero's score only depends on the runout, so compute it once per runout.
   const hc = new Int32Array(7);
@@ -190,6 +192,92 @@ export function calcEquity(job, onProgress) {
     tie: total ? tie / total : 0,
     combos: combos.length,
     runouts: total,
+    exact: true,
+    perClass,
+  };
+}
+
+export const PREFLOP_SAMPLES = 600000;
+
+// No board: enumerate all C(48,5) boards against a single hand, otherwise
+// sample random boards, split evenly across villain's combos.
+function preflopEquity(heroIds, combos, deck, onProgress, rng) {
+  const exact = combos.length === 1;
+  const perCombo = exact ? 0 : Math.ceil(PREFLOP_SAMPLES / Math.max(1, combos.length));
+  const hc = new Int32Array(7);
+  const vc = new Int32Array(7);
+  hc[0] = heroIds[0];
+  hc[1] = heroIds[1];
+  let win = 0;
+  let tie = 0;
+  let total = 0;
+  const perClass = {};
+
+  for (let k = 0; k < combos.length; k++) {
+    const [va, vb, key] = combos[k];
+    vc[0] = va;
+    vc[1] = vb;
+    const cards = Int32Array.from(deck.filter((c) => c !== va && c !== vb));
+    const n = cards.length;
+    let w = 0;
+    let t = 0;
+    let m = 0;
+    const showdown = () => {
+      const hs = evaluate(hc, 7);
+      const vs = evaluate(vc, 7);
+      if (hs > vs) w++;
+      else if (hs === vs) t++;
+      m++;
+    };
+    if (exact) {
+      for (let a = 0; a < n; a++) {
+        hc[2] = vc[2] = cards[a];
+        for (let b = a + 1; b < n; b++) {
+          hc[3] = vc[3] = cards[b];
+          for (let c = b + 1; c < n; c++) {
+            hc[4] = vc[4] = cards[c];
+            for (let d = c + 1; d < n; d++) {
+              hc[5] = vc[5] = cards[d];
+              for (let e = d + 1; e < n; e++) {
+                hc[6] = vc[6] = cards[e];
+                showdown();
+              }
+            }
+          }
+        }
+      }
+    } else {
+      for (let s = 0; s < perCombo; s++) {
+        // Partial Fisher-Yates: the first 5 slots become a random board.
+        for (let i = 0; i < 5; i++) {
+          const j = i + Math.floor(rng() * (n - i));
+          const tmp = cards[i];
+          cards[i] = cards[j];
+          cards[j] = tmp;
+          hc[2 + i] = vc[2 + i] = cards[i];
+        }
+        showdown();
+      }
+    }
+    win += w;
+    tie += t;
+    total += m;
+    const pc = perClass[key] || (perClass[key] = { equity: 0, combos: 0 });
+    pc.equity += (w + t / 2) / m;
+    pc.combos++;
+    if (onProgress && k % 50 === 49) onProgress((k + 1) / combos.length);
+  }
+  for (const pc of Object.values(perClass)) pc.equity /= pc.combos;
+  const equity = total ? (win + tie / 2) / total : 0;
+  return {
+    equity,
+    win: total ? win / total : 0,
+    tie: total ? tie / total : 0,
+    combos: combos.length,
+    runouts: total,
+    exact,
+    // 95% margin of error for the simulated estimate.
+    margin: exact ? 0 : 1.96 * Math.sqrt((equity * (1 - equity)) / Math.max(1, total)),
     perClass,
   };
 }
