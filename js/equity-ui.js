@@ -344,12 +344,12 @@ function evSection(E) {
   const sizes = hb
     ? [2, 2.5, 3, 4, 5].map((m) => ({ label: `${m}× raise`, R: m * hb }))
     : [0.25, 0.33, 0.5, 0.66, 0.75, 1, 1.5, 2].map((m) => ({ label: `${Math.round(m * 100)}% pot`, R: m * P }));
-  parts.push(h('div', { class: 'table-wrap' }, h('table', { class: 'ev-table' },
+  parts.push(h('div', { class: 'table-wrap' }, h('table', { class: 'ev-table facing-table' },
     h('thead', null, h('tr', null, ['Villain size', 'To call', 'Need', 'EV of call', ''].map((t) => h('th', null, t)))),
     h('tbody', null, sizes.map(({ label, R: r }) => {
       const f = evFacing(E, P, hb, r);
       return h('tr', { class: f.ev >= 0 ? 'good' : 'bad' },
-        h('td', null, `${label} (${fmtBB(r)})`),
+        h('td', null, label, h('span', { class: 'sub' }, fmtBB(r))),
         h('td', null, fmtBB(f.toCall)),
         h('td', null, pct(f.need)),
         h('td', null, `${f.ev >= 0 ? '+' : '−'}${fmtBB(Math.abs(f.ev))}`),
@@ -376,7 +376,7 @@ function openSection(E) {
     h('div', null, `${Math.round((100 * Bstar) / (P || 1))}% of pot. Villain's call is profitable below this size and a mistake above it — bet at least this much to deny them correct odds.`)));
 
   const sizes = [0.25, 0.33, 0.5, 0.66, 0.75, 1, 1.5, 2];
-  parts.push(h('div', { class: 'table-wrap' }, h('table', { class: 'ev-table' },
+  parts.push(h('div', { class: 'table-wrap' }, h('table', { class: 'ev-table open-table' },
     h('thead', null, h('tr', null, ['Your bet', 'Villain needs', "Villain's call EV", 'Your EV if called', 'Villain should'].map((t) => h('th', null, t)))),
     h('tbody', null, sizes.map((m) => {
       const B = m * P;
@@ -385,7 +385,7 @@ function openSection(E) {
       const heroEv = E * finalPot - B;
       const denied = villainEv < 0;
       return h('tr', { class: denied ? 'good' : 'bad' },
-        h('td', null, `${Math.round(m * 100)}% pot (${fmtBB(B)})`),
+        h('td', null, `${Math.round(m * 100)}% pot`, h('span', { class: 'sub' }, fmtBB(B))),
         h('td', null, pct(B / finalPot)),
         h('td', null, `${villainEv >= 0 ? '+' : '−'}${fmtBB(Math.abs(villainEv))}`),
         h('td', null, `${heroEv >= 0 ? '+' : '−'}${fmtBB(Math.abs(heroEv))}`),

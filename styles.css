@@ -404,3 +404,42 @@ details summary { cursor: pointer; color: var(--muted); font-size: .88rem; margi
 .unit-pre:empty, .unit-post:empty { display: none; }
 .ev-heading { margin: 1rem 0 .2rem; font-size: .9rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .ev0.bad { background: var(--bad-bg); }
+
+/* ---- phones ---- */
+
+.ev-table .sub { display: block; font-size: .75rem; color: var(--muted); }
+
+/* Keyboard shortcut hints are meaningless on touch screens. */
+@media (hover: none) and (pointer: coarse) {
+  kbd { display: none; }
+}
+
+@media (max-width: 560px) {
+  main { padding: .75rem; }
+  .card { padding: .75rem; }
+  .topbar { padding: .6rem .75rem; }
+  .tabs button { padding: .4rem .55rem; font-size: .9rem; }
+
+  /* iOS Safari zooms into inputs with text smaller than 16px. */
+  input, select { font-size: 16px !important; }
+
+  /* Card pickers: 13 per row, tighter. */
+  .deck, .deck-row { gap: 2px; }
+  .dcard { font-size: .7rem; padding: .35rem 0; border-radius: 5px; letter-spacing: -.02em; }
+  .dcard .suit { font-size: .85em; }
+
+  /* EV tables: drop the least essential column so the verdict stays visible. */
+  .ev-table { font-size: .8rem; }
+  .ev-table th, .ev-table td { padding: .3rem .25rem; white-space: normal; }
+  .facing-table th:nth-child(2), .facing-table td:nth-child(2) { display: none; }
+  .open-table th:nth-child(4), .open-table td:nth-child(4) { display: none; }
+
+  /* Table setup: a plain grid of seats instead of the oval. */
+  .setup-felt {
+    aspect-ratio: auto; margin: .5rem 0; border: 0; border-radius: 0; box-shadow: none; background: none;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem;
+  }
+  .setup-felt .felt-center { display: none; }
+  .setup-felt .seat { position: static; transform: none; min-width: 0; }
+  .setup-felt .seat select { width: 100%; }
+}
