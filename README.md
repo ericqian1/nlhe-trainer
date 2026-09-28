@@ -32,8 +32,9 @@ Press **Compute equity**. The result shows win/tie/lose, your equity against eac
 - calling costs `R − h` to win a final pot of `P + 2R`, so the required equity is `(R − h) / (P + 2R)`
 - EV of calling = `E·(P + 2R) − (R − h)`
 - break-even size `R* = (E·P + h) / (1 − 2E)`; at `E ≥ 50%` every call is +EV
+- **EV-neutral bet (if you bet first):** villain calls `B` to win `P + 2B` with equity `1 − E`, so their call breaks even at `B* = (1 − E)·P / (2E − 1)`. Bet more than `B*` and calling is a mistake for them; at `E ≤ 50%` there is no value bet (check).
 
-This treats the call as the last money in — no implied odds or future betting.
+These treat the bet or call as the last money in — no implied odds, future betting or fold equity.
 
 ## Editing ranges
 

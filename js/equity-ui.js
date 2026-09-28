@@ -316,7 +316,7 @@ function evSection(E) {
   const P = num('#eq-pot') || 0;
   const hb = num('#eq-hbet') || 0;
   const R = num('#eq-vbet');
-  const parts = [];
+  const parts = [h('h3', { class: 'ev-heading' }, 'If villain bets')];
 
   // EV-0: largest bet/raise-to where calling breaks even. E(P + 2R) = R - hb.
   if (E >= 0.5) {
@@ -355,8 +355,42 @@ function evSection(E) {
         h('td', null, `${f.ev >= 0 ? '+' : '−'}${fmtBB(Math.abs(f.ev))}`),
         h('td', null, f.ev >= 0 ? 'call' : 'fold'));
     })))));
-  parts.push(h('p', { class: 'muted small' },
-    'Equity is your share of the pot if all remaining cards are dealt with no more betting. EV-0 treats this call as the last money in — implied odds and future bets are not included.'));
+  return parts;
+}
+
+// Hero bets B first into pot P and villain calls: villain wins the P + 2B pot
+// with equity 1 - E, so their call breaks even at B* = (1 - E)P / (2E - 1).
+// Smaller bets give villain a profitable call; bigger ones make calling a mistake.
+function openSection(E) {
+  const P = num('#eq-pot') || 0;
+  const parts = [h('h3', { class: 'ev-heading' }, 'If you bet first')];
+  if (E <= 0.5) {
+    parts.push(h('div', { class: 'ev0 bad' }, h('strong', null, 'No value bet — check'),
+      h('div', null, `Villain has ${pct(1 - E)} against you, so calling any bet size is profitable for them.`)));
+    return parts;
+  }
+  const Bstar = ((1 - E) * P) / (2 * E - 1);
+  parts.push(h('div', { class: 'ev0' },
+    h('div', { class: 'muted small' }, "EV-neutral bet (villain's call breaks even)"),
+    h('div', { class: 'big-num' }, fmtBB(Bstar)),
+    h('div', null, `${Math.round((100 * Bstar) / (P || 1))}% of pot. Villain's call is profitable below this size and a mistake above it — bet at least this much to deny them correct odds.`)));
+
+  const sizes = [0.25, 0.33, 0.5, 0.66, 0.75, 1, 1.5, 2];
+  parts.push(h('div', { class: 'table-wrap' }, h('table', { class: 'ev-table' },
+    h('thead', null, h('tr', null, ['Your bet', 'Villain needs', "Villain's call EV", 'Your EV if called', 'Villain should'].map((t) => h('th', null, t)))),
+    h('tbody', null, sizes.map((m) => {
+      const B = m * P;
+      const finalPot = P + 2 * B;
+      const villainEv = (1 - E) * finalPot - B;
+      const heroEv = E * finalPot - B;
+      const denied = villainEv < 0;
+      return h('tr', { class: denied ? 'good' : 'bad' },
+        h('td', null, `${Math.round(m * 100)}% pot (${fmtBB(B)})`),
+        h('td', null, pct(B / finalPot)),
+        h('td', null, `${villainEv >= 0 ? '+' : '−'}${fmtBB(Math.abs(villainEv))}`),
+        h('td', null, `${heroEv >= 0 ? '+' : '−'}${fmtBB(Math.abs(heroEv))}`),
+        h('td', null, denied ? 'fold' : 'call'));
+    })))));
   return parts;
 }
 
@@ -391,6 +425,9 @@ function renderResult() {
         h('span', { class: 'w', style: `flex:${r.win}` }), h('span', { class: 't', style: `flex:${r.tie}` }), h('span', { class: 'l', style: `flex:${1 - r.win - r.tie}` })),
       h('div', { class: 'wtl-legend small' }, `Win ${pct(r.win)} · Tie ${pct(r.tie)} · Lose ${pct(1 - r.win - r.tie)}`),
       evSection(r.equity),
+      openSection(r.equity),
+      h('p', { class: 'muted small' },
+        'Equity is your share of the pot if all remaining cards are dealt with no more betting. EV figures treat this bet or call as the last money in — implied odds, future bets and fold equity are not included.'),
       eq.mode === 'range' && r.combos > 1 ? h('details', { open: true }, h('summary', null, 'Your equity vs each hand in the range'), heatGrid()) : null,
     );
   }
