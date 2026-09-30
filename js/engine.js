@@ -58,8 +58,15 @@ export function getContext(s, i) {
   else if (s.level === 1) kind = limpers === 0 ? 'rfi' : 'limped';
   else kind = { 2: 'vsOpen', 3: 'vs3bet', 4: 'vs4bet' }[s.level] || 'vsAllin';
   const raiser = s.raiserIdx >= 0 ? s.players[s.raiserIdx] : null;
+  const raises = s.log.filter((entry) => entry.type === 'raise');
+  // A caller can also be invested: only the original raiser gets an opener's
+  // response chart. Keep multiway pots on the existing broad fallback ranges.
+  const wasOpener = raises.length > 0 && raises[0].idx === i;
+  const cleanHeadsUp = !s.log.some((entry) =>
+    entry.type === 'call' && entry.idx !== i && entry.idx !== s.raiserIdx);
   return {
     idx: i, pos: p.pos, kind, level: s.level,
+    selfLimped: p.limped, wasOpener, cleanHeadsUp,
     toCall: Math.min(toCall, p.stack),
     checkOption: toCall === 0,
     canRaise: p.stack > toCall && othersCanAct,
