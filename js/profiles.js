@@ -62,7 +62,11 @@ const QUALIFIER_LABEL = {
 };
 
 export function spotLabel(spot) {
-  const [kind, qual] = spot.split('.');
+  const [kind, qual, opponent] = spot.split('.');
+  if (opponent) {
+    const facing = kind === 'vsOpen' ? 'open' : kind === 'vs3bet' ? '3-bet' : kind === 'vsLimpRaise' ? 'raise after limping' : kind;
+    return `${qual} vs ${opponent} ${facing}`;
+  }
   const base = KIND_LABEL[kind] || kind;
   if (!qual) return `${base} — any position`;
   if (kind === 'rfi') return `${base} — ${qual}`;
@@ -113,7 +117,16 @@ function spotCandidates(ctx) {
     case 'vsOpen': {
       const grp = ctx.pos === 'SB' || ctx.pos === 'BB' ? ctx.pos : 'IP';
       const vs = EARLY_POSITIONS.has(ctx.raiserPos) ? 'early' : 'late';
-      return [`vsOpen.${grp}_${vs}`, 'vsOpen'];
+      const exact = ctx.limpers === 0 && ctx.callers === 0
+        ? [`vsOpen.${ctx.pos}.${ctx.raiserPos}`] : [];
+      if (ctx.pos === 'SB' && ctx.raiserPos === 'BB' && ctx.selfLimped && ctx.cleanHeadsUp)
+        exact.unshift('vsLimpRaise.SB.BB');
+      return [...exact, `vsOpen.${grp}_${vs}`, 'vsOpen'];
+    }
+    case 'vs3bet': {
+      const exact = ctx.wasOpener && ctx.limpers === 0 && ctx.cleanHeadsUp
+        ? [`vs3bet.${ctx.pos}.${ctx.raiserPos}`] : [];
+      return [...exact, `vs3bet.${ctx.invested ? 'invested' : 'cold'}`, 'vs3bet'];
     }
     default:
       return [`${ctx.kind}.${ctx.invested ? 'invested' : 'cold'}`, ctx.kind];

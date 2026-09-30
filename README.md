@@ -63,3 +63,23 @@ npm test         # engine + range checks, plain Node (no dependencies)
 ## Deploying
 
 GitHub Pages serves the repo root directly — no build. In the repo's **Settings → Pages**, set Source to *Deploy from a branch*, branch `main`, folder `/ (root)`.
+
+## Granular Pro ranges
+
+Pro RFI charts and position-pair responses are transcribed from the
+[Casino.org / Replay Poker preflop PDF](https://www.casino.org/blog/wp-content/uploads/Preflop_charts_final.pdf).
+These charts have discrete actions, with value and bluff raises both represented
+by `raise`, and small-blind limps represented by `call`. No mixed frequencies are inferred.
+
+Exact spots use `vsOpen.<player>.<opener>`, `vs3bet.<opener>.<3-bettor>`, and
+`vsLimpRaise.SB.BB`. Grouped opponent labels are expanded into separate rows.
+The source's ambiguous `UTG vs LJ+2 3bet` chart is excluded from active lookup.
+
+Exact open-response charts apply only when there are no limpers or prior callers.
+Exact 3-bet-response charts apply to the original opener in a pot without limpers
+or third-party calls. The SB limp/BB raise chart has its own lookup. Existing
+broad ranges remain the fallbacks for cold decisions, multiway pots, and situations
+not covered by the source. Other villain profiles and sizing rules are unchanged.
+
+The source does not specify stack depth or raise-size assumptions. These ranges
+are a transcription, not a verified solver solution for this trainer's 100bb game.
